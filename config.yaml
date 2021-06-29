@@ -1,0 +1,14 @@
+robot_dream_date_app:
+  Authorization: 'JWT '
+  content-type: application/json
+  directory: ./data/
+  endpoint_auth: /auth
+  endpoint_stock: /out_of_stock
+  password: djT6LasE
+  payload_date:
+  - '1990-03-08'
+  - '2021-03-07'
+  - '2021-03-08'
+  token:
+  url: https://robot-dreams-de-api.herokuapp.com
+  username: rd_dreams
