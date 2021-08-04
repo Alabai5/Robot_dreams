@@ -14,9 +14,9 @@ from airflow.operators.http_operator import SimpleHttpOperator
 from hdfs import InsecureClient
 
 
-params = date.today()
 
-def main(params):
+
+def main(params=date.today()):
     client = InsecureClient(f'http://127.0.0.1:50070', user='user')
     #create directiry in HDFS
     client.makedirs('/bronze/RobotDreamsAPI/{0}'.format(params))
@@ -43,6 +43,18 @@ def main(params):
         print('Date does not exists in the API')
     print(date)
 
+dag_rd = DAG(
+    dag_id='copy_data_from_API_to_hdfs',
+    description='connection to robot dreams API',
+    start_date=datetime(2021, 7, 18, 1, 0),
+    end_date=datetime(2022, 7, 23, 10, 0),
+    schedule_interval='@daily',
+)
 
-if __name__ == '__main__':
-    main(params)
+run_connection_to_api = PythonOperator(
+    task_id='get_data_from_API',
+    python_callable=main,
+    dag=dag_rd
+)
+
+run_connection_to_api
