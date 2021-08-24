@@ -23,21 +23,18 @@ def load_data_to_bronze_api_group():
     return PythonOperator(
         task_id="load_data_from_api_to_bronze",
         python_callable=load_data_from_api_to_bronze,
-        op_kwargs={"list_params": api_list}
+        op_kwargs={"list_params": api_list},
+        provide_context=True
     )
 
-def load_data_from_bronze_api_to_silver_group():
-    return PythonOperator(
-        task_id="load_data_from_api_to_silver",
-        python_callable=load_data_rd_api_from_bronze_to_silver_spark
-    )
+
 
 dag = DAG (
-    dag_id="load_data_from_api_to_bronze_and_silver",
+    dag_id="load_data_from_api_to_bronze",
     description="Load data from API to Data Lake bronze and silver",
     schedule_interval="@daily",
     start_date=datetime(2021, 8, 10),
-    default_args=default_args,
+    default_args=default_args
 
 )
 
@@ -51,14 +48,6 @@ dummy2 = DummyOperator(
     dag=dag
 )
 
-dummy3 = DummyOperator(
-    task_id='start_load_data_from_to_bronze_to_silver',
-    dag=dag
-)
 
-dummy4 = DummyOperator(
-    task_id='finish_load_data_from_bronze_to_silver',
-    dag=dag
-)
 
-dummy1 >> load_data_to_bronze_api_group() >> dummy2 >> dummy3 >> load_data_from_bronze_api_to_silver_group() >> dummy4
+dummy1 >> load_data_to_bronze_api_group() >> dummy2

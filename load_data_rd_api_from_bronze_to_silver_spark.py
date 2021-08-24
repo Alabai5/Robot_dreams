@@ -4,8 +4,9 @@ import logging
 
 from pyspark.sql import SparkSession
 
-def load_data_rd_api_from_bronze_to_silver_spark():
-    last_partition_date = str(date.today())
+def load_data_rd_api_from_bronze_to_silver_spark(**context):
+    start = context['execution_date']
+    last_partition_date = start.strftime('%Y-%m-%d')
 
     logging.info(f"Create spark session")
     spark = SparkSession.builder \
@@ -16,7 +17,7 @@ def load_data_rd_api_from_bronze_to_silver_spark():
     logging.info(f"Writing data {last_partition_date} from Bronze to Silver")
     logging.info(f"Create DataFrame based on the api folder {last_partition_date}")
 
-    bronze_df = spark.read.load(f"/DataLake/bronze/RobotDreamsAPI/{last_partition_date}/Product-{last_partition_date}.json"
+    bronze_df = spark.read.load(f"/DataLake/bronze/out_of_stock/{last_partition_date}/Product-{last_partition_date}.json"
                                 , header="true"
                                 , inferSchema="true"
                                 , format="json"
@@ -27,5 +28,5 @@ def load_data_rd_api_from_bronze_to_silver_spark():
     clear_on_the_dup_product_df = bronze_df.dropDuplicates()
     logging.info(f"Writing data to {last_partition_date} to silver DataLake")
     clear_on_the_dup_product_df.write \
-        .parquet(f"/DataLake/silver/RobotDreamsAPI/Product-{last_partition_date}", mode='overwrite')
+        .parquet(f"/DataLake/silver/out_of_stock/out_of_stock", mode = 'append' )
     logging.info(f"Success!!!")

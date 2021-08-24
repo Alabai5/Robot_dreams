@@ -7,9 +7,9 @@ from pyspark.sql.types import *
 import pyspark.sql.functions as F
 from pyspark.sql.window import Window
 
-def load_tables_dshop_db_from_bronze_to_silver_spark(table):
-
-    last_partition_date = str(date.today())
+def load_tables_dshop_db_from_bronze_to_silver_spark(table, **context):
+    start = context['execution_date']
+    last_partition_date = start.strftime('%Y-%m-%d')
 
     logging.info(f"Create spark session")
     spark = SparkSession.builder \
@@ -20,7 +20,7 @@ def load_tables_dshop_db_from_bronze_to_silver_spark(table):
 
     logging.info(f"Writing table {table} from Bronze to Silver")
     logging.info(f"Create DataFrame based on the table {table}")
-    bronze_df = spark.read.load(f"/DataLake/bronze/dshop/{table}/{last_partition_date}/{table}.csv"
+    bronze_df = spark.read.load(f"/DataLake/bronze/dshop_bu/{table}/{last_partition_date}/{table}.csv"
                                        , header="true"
                                        , inferSchema="true"
                                        , format="csv"
@@ -30,6 +30,6 @@ def load_tables_dshop_db_from_bronze_to_silver_spark(table):
     clear_on_the_dup_df = bronze_df.dropDuplicates()
     logging.info(f"Writing {table} to silver DataLake")
     clear_on_the_dup_df.write \
-        .parquet(f"/DataLake/silver/dshop/{table}", mode='overwrite')
+        .parquet(f"/DataLake/silver/dshop_bu/{table}", mode='overwrite')
     logging.info(f"Success!!!")
 
