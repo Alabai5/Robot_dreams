@@ -16,8 +16,11 @@ daily_etl:
       endpoint_api:
         - /out_of_stock
     postgresql_dshop:
+      - location_areas
       - aisles
       - clients
       - departments
-      - orders
+      - store_types
+      - stores
       - products
+      - orders
