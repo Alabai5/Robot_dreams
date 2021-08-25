@@ -24,7 +24,7 @@ def load_data_outOfStock_to_dwh():
         .master('local') \
         .appName("FromDshopBuSilverToEnterpriseDWH") \
         .getOrCreate()
-    outofstock_fs = outofstock_fs = spark.read.parquet(f"/DataLake/silver/out_of_stock/out_of_stock")
+    outofstock_fs = spark.read.parquet(f"/DataLake/silver/out_of_stock/out_of_stock")
     outofstock_df = outofstock_fs.select(F.col('date').alias('dimdateid_df')
                                          , F.col('product_id').alias('dimproductid_df'))
 
