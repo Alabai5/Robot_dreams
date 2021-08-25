@@ -15,7 +15,7 @@ from pyspark.sql.window import Window
 
 
 def load_tables_dshop_from_silver_to_dwh(values):
-    gp_url = BaseHook.get_connection('olap_greenplum_enterprise')
+    gp_url = "jdbc:postgresql://192.168.0.104:5433/Enterprise"
     gp_properties = {"user": "gpuser", "password": "secret"}
 
     logging.info(f"Create spark session")

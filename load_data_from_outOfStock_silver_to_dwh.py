@@ -15,7 +15,7 @@ from pyspark.sql.window import Window
 
 
 def load_data_outOfStock_to_dwh():
-    gp_url = BaseHook.get_connection('olap_greenplum_enterprise')
+    gp_url = "jdbc:postgresql://192.168.0.104:5433/Enterprise"
     gp_properties = {"user": "gpuser", "password": "secret"}
 
     logging.info(f"Create spark session")
@@ -24,10 +24,7 @@ def load_data_outOfStock_to_dwh():
         .master('local') \
         .appName("FromDshopBuSilverToEnterpriseDWH") \
         .getOrCreate()
-    outofstock_fs = spark.read.load(f"/DataLake/bronze/out_of_stock/2021-08-20/Product-2021-08-20.json"
-                                    , header="true"
-                                    , inferSchema="true"
-                                    , format="json")
+    outofstock_fs = outofstock_fs = spark.read.parquet(f"/DataLake/silver/out_of_stock/out_of_stock")
     outofstock_df = outofstock_fs.select(F.col('date').alias('dimdateid_df')
                                          , F.col('product_id').alias('dimproductid_df'))
 
