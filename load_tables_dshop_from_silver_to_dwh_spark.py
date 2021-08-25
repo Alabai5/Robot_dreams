@@ -14,7 +14,7 @@ import pyspark.sql.functions as F
 from pyspark.sql.window import Window
 
 
-def load_tables_dshop_from_silver_to_dwh(values):
+def load_tables_dshop_from_silver_to_dwh(table):
     gp_url = "jdbc:postgresql://192.168.0.104:5433/Enterprise"
     gp_properties = {"user": "gpuser", "password": "secret"}
 
@@ -25,7 +25,7 @@ def load_tables_dshop_from_silver_to_dwh(values):
         .master('local') \
         .appName("FromDshopBuSilverToEnterpriseDWH") \
         .getOrCreate()
-    if values == 'location_areas':
+    if table == 'location_areas':
         location_areas_fs = spark.read.parquet(f"/DataLake/silver/dshop_bu/location_areas")
         location_areas_df = location_areas_fs.select(F.col('area_id').alias('id_df')
                                                      , F.col('area').alias('areaname_df'))
@@ -41,7 +41,7 @@ def load_tables_dshop_from_silver_to_dwh(values):
                                      , table='dwh.dimlocationarea'
                                      , properties=gp_properties
                                      , mode='append')
-    elif values == 'aisles':
+    elif table == 'aisles':
         aisles_fs = spark.read.parquet(f"/DataLake/silver/dshop_bu/aisles")
         aisles_df = aisles_fs.select(F.col('aisle_id').alias('id_df'), F.col('aisle').alias('aislesname_df'))
         gp_aisles = spark.read.jdbc(gp_url
@@ -56,7 +56,7 @@ def load_tables_dshop_from_silver_to_dwh(values):
                                , table='dwh.dimaisles'
                                , properties=gp_properties
                                , mode='append')
-    elif values == 'clients':
+    elif table == 'clients':
         clients_fs = spark.read.parquet(f"/DataLake/silver/dshop_bu/clients")
         clients_df = clients_fs.select(F.col('id').alias('id_df')
                                        , F.col('fullname').alias('clientname_df')
@@ -77,7 +77,7 @@ def load_tables_dshop_from_silver_to_dwh(values):
                                 , table='dwh.dimclient'
                                 , properties=gp_properties
                                 , mode='append')
-    elif values == 'store_types':
+    elif table == 'store_types':
         store_types_fs = spark.read.parquet(f"/DataLake/silver/dshop_bu/store_types")
         store_types_df = store_types_fs.select(F.col('store_type_id').alias('id_df')
                                                , F.col('type').alias('storetype_df'))
@@ -97,7 +97,7 @@ def load_tables_dshop_from_silver_to_dwh(values):
                                     , table='dwh.dimstoretype'
                                     , properties=gp_properties
                                     , mode='append')
-    elif values == 'stores':
+    elif table == 'stores':
         stores_fs = spark.read.parquet(f"/DataLake/silver/dshop_bu/stores")
         stores_df = stores_fs.select(F.col('store_id').alias('id_df')
                                      , F.col('location_area_id').alias('dimlocationareaid_df')
@@ -119,7 +119,7 @@ def load_tables_dshop_from_silver_to_dwh(values):
                                , table='dwh.dimstore'
                                , properties=gp_properties
                                , mode='append')
-    elif values == 'departments':
+    elif table == 'departments':
         departments_fs = spark.read.parquet(f"/DataLake/silver/dshop_bu/departments")
         departments_df = departments_fs.select(F.col('department_id').alias('id_df')
                                                , F.col('department').alias('departmentname_df'))
@@ -138,7 +138,7 @@ def load_tables_dshop_from_silver_to_dwh(values):
                                     , table='dwh.dimdepartment'
                                     , properties=gp_properties
                                     , mode='append')
-    elif values == 'products':
+    elif table == 'products':
         products_fs = spark.read.parquet(f"/DataLake/silver/dshop_bu/products")
         products_df = products_fs.select(F.col('product_id').alias('id_df')
                                          , F.col('product_name').alias('productname_df')
@@ -169,7 +169,7 @@ def load_tables_dshop_from_silver_to_dwh(values):
                                          , table='dwh.dimproduct'
                                          , properties=gp_properties
                                          , mode='append')
-    elif values == 'orders':
+    elif table == 'orders':
         orders_fs = spark.read.parquet(f"/DataLake/silver/dshop_bu/orders")
         orders_df = orders_fs.select(F.col('order_id').alias('id_df'))
 
